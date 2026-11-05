@@ -9,6 +9,12 @@ on:
 permissions:
   contents: write
 
+env:
+  LOAD_USERS: '50'
+  LOAD_RUNTIME: '30s'
+  SLA_P95_MS: '500'
+  SLA_FAIL_PCT: '1'
+
 jobs:
   load:
     runs-on: ubuntu-latest
@@ -23,7 +29,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run load test (start API + Locust + SLA gate)
+      - name: Run load test (start API + Locust)
         run: |
           uvicorn app.main:app --host 127.0.0.1 --port 8000 &
           APP=$!
@@ -31,13 +37,15 @@ jobs:
           mkdir -p report
           set +e
           locust -f locustfile.py --headless --host http://127.0.0.1:8000 \
-            --users 50 --spawn-rate 10 --run-time 30s \
-            --html report/index.html --csv report/stats
-          code=$?
+            --users "$LOAD_USERS" --spawn-rate 10 --run-time "$LOAD_RUNTIME" \
+            --html report/locust.html --csv report/stats
+          echo "SLA_CODE=$?" >> "$GITHUB_ENV"
           kill "$APP" 2>/dev/null || true
-          exit $code
 
-      - name: Upload Locust report
+      - name: Build friendly PT report
+        run: python scripts/build_report.py
+
+      - name: Upload report
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -45,19 +53,26 @@ jobs:
           path: report
           if-no-files-found: ignore
 
+      - name: Enforce SLA gate
+        run: |
+          if [ "${SLA_CODE:-0}" != "0" ]; then
+            echo "::error::SLA estourado — veja o relatório"; exit 1
+          fi
+          echo "SLA OK"
+
   report:
-    name: Publish Locust report
+    name: Publish report
     needs: load
     if: ${{ always() && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Download Locust report
+      - name: Download report
         uses: actions/download-artifact@v4
         with:
           name: locust-report
           path: report
 
-      - name: Publish report to gh-pages
+      - name: Publish to gh-pages
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -68,5 +83,5 @@ jobs:
           git add -A
           git -c user.name='github-actions[bot]' \
               -c user.email='github-actions[bot]@users.noreply.github.com' \
-              commit -q -m "Locust report for ${GITHUB_SHA::7}"
+              commit -q -m "Load report for ${GITHUB_SHA::7}"
           git push -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" gh-pages

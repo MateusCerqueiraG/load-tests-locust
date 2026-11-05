@@ -68,9 +68,9 @@ locust -f locustfile.py --headless --host http://localhost:8000 \
   --users 50 --spawn-rate 10 --run-time 30s --html report/index.html
 ```
 
-## 📊 Relatório Locust
+## 📊 Relatório
 
-Publicado automaticamente a cada push na `main`:
+Publicado automaticamente a cada push na `main` — com **resumo em português e linguagem acessível** (veredito, números-chave e glossário) e **link para o relatório técnico completo** do Locust:
 
 ### 👉 **[mateuscerqueirag.github.io/load-tests-locust](https://mateuscerqueirag.github.io/load-tests-locust/)**
 
