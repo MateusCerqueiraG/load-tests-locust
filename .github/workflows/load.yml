@@ -1,0 +1,72 @@
+name: Load Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  load:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run load test (start API + Locust + SLA gate)
+        run: |
+          uvicorn app.main:app --host 127.0.0.1 --port 8000 &
+          APP=$!
+          for i in $(seq 1 20); do curl -sf http://127.0.0.1:8000/health >/dev/null && break; sleep 1; done
+          mkdir -p report
+          set +e
+          locust -f locustfile.py --headless --host http://127.0.0.1:8000 \
+            --users 50 --spawn-rate 10 --run-time 30s \
+            --html report/index.html --csv report/stats
+          code=$?
+          kill "$APP" 2>/dev/null || true
+          exit $code
+
+      - name: Upload Locust report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: locust-report
+          path: report
+          if-no-files-found: ignore
+
+  report:
+    name: Publish Locust report
+    needs: load
+    if: ${{ always() && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Locust report
+        uses: actions/download-artifact@v4
+        with:
+          name: locust-report
+          path: report
+
+      - name: Publish report to gh-pages
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd report
+          touch .nojekyll
+          git init -q
+          git checkout -B gh-pages
+          git add -A
+          git -c user.name='github-actions[bot]' \
+              -c user.email='github-actions[bot]@users.noreply.github.com' \
+              commit -q -m "Locust report for ${GITHUB_SHA::7}"
+          git push -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" gh-pages
