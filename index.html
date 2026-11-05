@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="pt-BR">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Relatório de Teste de Carga</title><style>
+*{box-sizing:border-box}
+body{margin:0;background:#eef3f6;color:#15242e;font-family:-apple-system,"Segoe UI",system-ui,Roboto,sans-serif;line-height:1.55}
+.wrap{max-width:900px;margin:0 auto;padding:32px 20px 60px}
+h1{font-size:26px;margin:0 0 4px}
+.sub{color:#5a7180;font-size:14px;margin:0 0 24px}
+.verdict{display:flex;gap:14px;align-items:flex-start;border-radius:14px;padding:18px 20px;margin:0 0 24px;border:1px solid}
+.verdict.ok{background:#e4f6ec;border-color:#2e9e6b}
+.verdict.fail{background:#fde6e8;border-color:#c0392b}
+.verdict .tag{font-weight:800;font-size:13px;letter-spacing:.5px;padding:5px 11px;border-radius:999px;color:#fff;white-space:nowrap}
+.verdict.ok .tag{background:#2e9e6b}
+.verdict.fail .tag{background:#c0392b}
+.verdict p{margin:0;font-size:14.5px}
+.intro{background:#fff;border:1px solid #dce5ea;border-radius:12px;padding:16px 18px;margin:0 0 24px;font-size:14.5px;color:#36505d}
+.intro b{color:#0d7f93}
+h2{font-size:16px;margin:28px 0 12px;color:#0d6274}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.kpi{background:#fff;border:1px solid #dce5ea;border-radius:12px;padding:14px 16px}
+.kpi .n{font-size:24px;font-weight:800;color:#0d7f93;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:13px;font-weight:600;margin-top:2px}
+.kpi .h{font-size:12px;color:#6a828f;margin-top:5px}
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #dce5ea;border-radius:12px;overflow:hidden;font-size:13.5px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid #eef2f5}
+th{background:#f4f8fa;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:#6a828f}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:#0d7f93}
+.tablewrap{overflow-x:auto}
+.btn{display:inline-block;margin-top:20px;background:#103a4e;color:#fff;text-decoration:none;padding:11px 18px;border-radius:10px;font-size:14px;font-weight:600}
+.btn:hover{background:#0d6274}
+.glossary{font-size:13.5px;color:#4a6472}
+.glossary li{margin:5px 0}
+.glossary b{color:#15242e}
+footer{margin-top:36px;padding-top:16px;border-top:1px solid #dce5ea;font-size:12px;color:#8097a3}
+</style></head>
+<body>
+<div class="wrap">
+  <h1>⚡ Relatório de Teste de Carga</h1>
+  <p class="sub">Demo Store API &middot; gerado em 05/11/2026 18:51</p>
+
+  <div class="verdict ok">
+    <span class="tag">✅ APROVADO</span>
+    <p>O sistema aguentou <b>50 usuários ao mesmo tempo</b> por <b>30s</b>. respondendo <b>670</b> ações com <b>0 falha(s)</b> (0.00%) e tempo de resposta (p95) de <b>7 ms</b> — dentro do limite de qualidade (SLA).</p>
+  </div>
+
+  <div class="intro">
+    <b>O que é um teste de carga?</b> É simular <b>muitos usuários usando o sistema ao mesmo tempo</b>
+    para descobrir se ele aguenta o tranco — se continua <b>rápido</b> e <b>sem erros</b> sob pressão,
+    antes dos usuários reais chegarem. Abaixo, o resultado em números simples.
+  </div>
+
+  <h2>📊 Resumo em números</h2>
+  <div class="kpis">
+    <div class="kpi"><div class="n">50</div><div class="l">usuários simultâneos</div><div class="h">Pessoas usando o sistema ao mesmo tempo durante o teste.</div></div>
+<div class="kpi"><div class="n">30s</div><div class="l">duração do teste</div><div class="h">Por quanto tempo a carga foi aplicada.</div></div>
+<div class="kpi"><div class="n">670</div><div class="l">requisições feitas</div><div class="h">Total de ações enviadas ao sistema (abrir página, comprar, etc.).</div></div>
+<div class="kpi"><div class="n">0</div><div class="l">falharam</div><div class="h">Quantas ações deram erro. Quanto mais perto de zero, melhor.</div></div>
+<div class="kpi"><div class="n">2 ms</div><div class="l">tempo médio de resposta</div><div class="h">Quanto o sistema leva, em média, pra responder (ms = milésimos de segundo).</div></div>
+<div class="kpi"><div class="n">7 ms</div><div class="l">p95 (95% abaixo disso)</div><div class="h">95% das respostas foram mais rápidas que isso. Mede a experiência no pior caso comum.</div></div>
+<div class="kpi"><div class="n">23.9/s</div><div class="l">vazão (req. por segundo)</div><div class="h">Quantas ações o sistema consegue atender a cada segundo.</div></div>
+  </div>
+
+  <h2>🧭 O que cada número quer dizer</h2>
+  <ul class="glossary">
+    <li><b>Tempo de resposta</b> — quanto o sistema demora pra responder. Menor = mais rápido (em ms, milésimos de segundo).</li>
+    <li><b>p95</b> — 95% das respostas foram mais rápidas que esse valor. Mostra como é a experiência no "pior caso comum", ignorando picos raros.</li>
+    <li><b>Vazão</b> — quantas ações por segundo o sistema consegue atender. Maior = aguenta mais gente.</li>
+    <li><b>SLA</b> — o "contrato de qualidade": metas que o sistema tem que cumprir (aqui: p95 abaixo de 500 ms e menos de 1.0% de erros). Se estourar, o teste reprova.</li>
+  </ul>
+
+  <h2>🔎 Detalhe por rota testada</h2>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Método</th><th>Rota</th><th class="num">Requisições</th><th class="num">Falhas</th><th class="num">Tempo médio</th><th class="num">p95</th></tr></thead>
+    <tbody><tr><td class="mono">GET</td><td>/health</td>
+        <td class="num">55</td>
+        <td class="num">0</td>
+        <td class="num">2 ms</td>
+        <td class="num">7 ms</td></tr>
+<tr><td class="mono">POST</td><td>/orders</td>
+        <td class="num">125</td>
+        <td class="num">0</td>
+        <td class="num">2 ms</td>
+        <td class="num">7 ms</td></tr>
+<tr><td class="mono">GET</td><td>/products</td>
+        <td class="num">313</td>
+        <td class="num">0</td>
+        <td class="num">2 ms</td>
+        <td class="num">8 ms</td></tr>
+<tr><td class="mono">GET</td><td>/products/[id]</td>
+        <td class="num">177</td>
+        <td class="num">0</td>
+        <td class="num">2 ms</td>
+        <td class="num">7 ms</td></tr></tbody>
+  </table>
+  </div>
+
+  <a class="btn" href="locust.html">🔧 Ver relatório técnico completo (Locust) →</a>
+
+  <footer>
+    Teste executado com <b>Locust</b> contra uma API FastAPI própria (ambiente de teste). &middot;
+    Projeto de portfólio de QA &middot; Mateus Cerqueira
+  </footer>
+</div>
+</body>
+</html>
